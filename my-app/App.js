@@ -2,6 +2,8 @@ import { createContext, useContext, useState } from 'react';
 import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import styled from 'styled-components/native'
 
+import Login from './screens/Login';
+
 const Column = styled(View)`
   flex-direction: column;
 `;
@@ -40,11 +42,5 @@ export default function App() {
   const [text, setText] = useState('');
 
   return (
-    <Container>
-      <CustomTextInput value={text} onChangeText={setText} />
-      <CustomButton>
-        <Text>Add to list</Text>
-      </CustomButton>
-    </Container>
-  );
+    <Login />
 }

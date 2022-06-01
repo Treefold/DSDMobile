@@ -7,7 +7,7 @@ import Welcome from './screens/Welcome';
 
 const App = () => {
   return (
-    <Login />
+    <Welcome />
   );
 }
 

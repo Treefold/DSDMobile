@@ -21,7 +21,7 @@ const {primary, secondary, tertiary, darkLight, brand, green, red} = Colors;
 export const StyledContainer = styled(View)`
     flex: 1;
     padding: 25px;
-    padding-top: 10px; //${StatusBarHeight + 10}px;
+    padding-top: 30px; //${StatusBarHeight + 30}px;
     background-color: ${primary};
 `;
 

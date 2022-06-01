@@ -61,7 +61,7 @@ const Login = () => {
 
                         <MsgBox>...</MsgBox>
                         <StyledButton onPress={handleSubmit}>
-                            <ButtonText>Login </ButtonText>
+                            <ButtonText>Login</ButtonText>
                         </StyledButton>
                         <Line />
                         <StyledButton google={true} onPress={handleSubmit}>

@@ -18,13 +18,17 @@ import {
 const { brand, darkLight } = Colors;
 
 const Signup = ({navigation}) => {
+    const defaultDate = new Date(2000, 0, 1);
     const [hidePassword, setHidePassword] = useState(true);
     const [show, setShow] = useState(false);
-    const [date, setDate] = useState(new Date(2000, 0, 1));
+    const [date, setDate] = useState(defaultDate);
 
     const onDateChange = (_event, selectedDate) => {
-        setDate(selectedDate);
-        setShow(false);
+        if (selectedDate)
+        {
+            setDate(selectedDate);
+            setShow(false);
+        }
     }
 
     const showDatePicker = () => {
@@ -88,7 +92,7 @@ const Signup = ({navigation}) => {
                                 placeholderTextColor={darkLight}
                                 onChange={handleChange('dateOfBirth')}
                                 onBlur={handleBlur('dateOfBirth')}
-                                value={date.toDateString()}
+                                value={(date || defaultDate).toLocaleDateString()}
                                 isDate={true}
                                 editable={false}
                                 showDatePicker={showDatePicker}

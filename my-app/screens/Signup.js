@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import { Formik } from 'formik';
 import axios from 'axios';
 import { Ionicons, Octicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import env from "./../env";
+import { CredentialsContext } from './../components/CredentialsContext';
 import KeyboardAvoindingWrapper from './../components/KeyboardAvoindingWrapper';
 import {
     Colors,
@@ -19,7 +21,7 @@ import {
 
 const { brand, darkLight, primary } = Colors;
 
-const Signup = ({navigation}) => {
+const Signup = () => {
     const defaultDate = new Date(2000, 0, 1);
     const [hidePassword, setHidePassword] = useState(true);
     const [show, setShow] = useState(false);
@@ -27,11 +29,23 @@ const Signup = ({navigation}) => {
     const [message, setMessage] = useState();
     const [messageType, setMessageType] = useState(); 
     const [errMessages, setErrMessages] = useState({});
+
+    const {storedCredentials, setStoredCredentials} = useContext(CredentialsContext);
   
     const handleMessage = (message, type = 'FAILED') => {
         setMessage (message);
         setMessageType (type);
     }
+  
+    const persistLogin = (credentials) => {
+        AsyncStorage.setItem('normalCredentials', JSON.stringify(credentials))
+        .then(() => {
+            setStoredCredentials(credentials);
+        }).catch( err => {
+            console.log(err);
+            handleMessage('Login Persisting failed');
+        })
+    };
   
     const handleSignup = (credentials, setSubmitting) => {
         handleMessage(null);
@@ -40,11 +54,8 @@ const Signup = ({navigation}) => {
         const url = env.endpoint + 'users';
     
         axios.post(url, credentials).then((response) => {
-            navigation.navigate('Welcome', {...response?.data});
-            setSubmitting(false);
+            persistLogin ({...response?.data})
         }).catch((error) => {
-            // handleMessage(error?.response?.data || 'An error occured', 'FAILED');
-
             const rawErrors = error?.response?.data || [];
             const newErrMessages = {};
             rawErrors.forEach ( (rawErr) => {
@@ -52,7 +63,7 @@ const Signup = ({navigation}) => {
                 newErrMessages[msgId] = rawErr?.message;
             })
             setErrMessages(newErrMessages);
-
+        }).finally(() => {
             setSubmitting(false);
         });
     };
@@ -182,16 +193,11 @@ const Signup = ({navigation}) => {
                                 setHidePassword={setHidePassword}
                             />
 
-                            <MsgBox type={messageType}>{message}</MsgBox>
-                            {/* <StyledButton onPress={handleSubmit}>
-                                <ButtonText>Signup</ButtonText>
-                            </StyledButton> */}
-                            
+                            <MsgBox type={messageType}>{message}</MsgBox>                           
                 
                             {!isSubmitting && <StyledButton onPress={handleSubmit}>
                                 <ButtonText>Signup</ButtonText>
                             </StyledButton>}
-
                             {isSubmitting && <StyledButton disable={true}>
                                 <ActivityIndicator size="small" color={primary} />
                             </StyledButton>}

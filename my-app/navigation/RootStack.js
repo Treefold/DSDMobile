@@ -4,6 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Colors } from '../components/styles';
 const { tertiary } = Colors;
 
+import { CredentialsContext } from './../components/CredentialsContext';
+
 // screens
 import Login from './../screens/Login';
 import Signup from './../screens/Signup';
@@ -13,26 +15,38 @@ const Stack = createStackNavigator();
 
 const RootStack = () => {
     return(
-        <NavigationContainer>
-            <Stack.Navigator
-                screenOptions={{
-                    headerStyled: {
-                        backgroundColor: 'transparent'
-                    },
-                    headerTintColor: tertiary,
-                    headerTransparent: true,
-                    headerTitle: '',
-                    headerLeftContainerStyle: {
-                        paddingLeft: 20
-                    }
-                }}
-                initialRouteName="Login"
-            >
-                <Stack.Screen name="Login" component={Login} />
-                <Stack.Screen name="Signup" component={Signup} />
-                <Stack.Screen name="Welcome" component={Welcome} options={{ headerTintColor: 'black' }} />
-            </Stack.Navigator>
-        </NavigationContainer>
+        /* Context API */
+        <CredentialsContext.Consumer>
+            {({ storedCredentials }) => (
+                <NavigationContainer>
+                    <Stack.Navigator
+                        screenOptions={{
+                            headerStyled: {
+                                backgroundColor: 'transparent'
+                            },
+                            headerTintColor: tertiary,
+                            headerTransparent: true,
+                            headerTitle: '',
+                            headerLeftContainerStyle: {
+                                paddingLeft: 20
+                            }
+                        }}
+                        initialRouteName="Login"
+                    >
+                        { 
+                            storedCredentials ? (
+                                <Stack.Screen name="Welcome" component={Welcome} options={{ headerTintColor: 'black' }} />
+                            ) : (
+                                <>
+                                    <Stack.Screen name="Login" component={Login} />
+                                    <Stack.Screen name="Signup" component={Signup} />
+                                </>
+                            )
+                        }
+                    </Stack.Navigator>
+                </NavigationContainer>
+            )}
+        </CredentialsContext.Consumer>
     );
 }
 

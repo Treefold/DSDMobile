@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, { useState, useContext } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import { Formik } from 'formik';
 import axios from 'axios';
@@ -7,6 +8,7 @@ import * as Google from "expo-google-app-auth"
 import { Fontisto, Ionicons, Octicons } from '@expo/vector-icons';
 import env from "./../env";
 
+import { CredentialsContext } from './../components/CredentialsContext';
 import KeyboardAvoindingWrapper from './../components/KeyboardAvoindingWrapper';
 import {
     Colors,
@@ -20,16 +22,28 @@ import {
 
 const { brand, darkLight, primary } = Colors;
 
-const Login = ({navigation}) => {
+const Login = () => {
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState(); 
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
 
+    const {storedCredentials, setStoredCredentials} = useContext(CredentialsContext);
+
   const handleMessage = (message, type = 'FAILED') => {
       setMessage (message);
       setMessageType (type);
   }
+  
+  const persistLogin = (credentials) => {
+    AsyncStorage.setItem('normalCredentials', JSON.stringify(credentials))
+    .then(() => {
+        setStoredCredentials(credentials);
+    }).catch( err => {
+        console.log(err);
+        handleMessage('Login Persisting failed');
+    })
+  };
 
   const handleLogin = (credentials, setSubmitting) => {
     handleMessage(null);
@@ -37,10 +51,10 @@ const Login = ({navigation}) => {
     const url = env.endpoint + 'sessions';
 
     axios.post(url, credentials).then((response) => {
-        navigation.navigate('Welcome', {...response?.data});
-        setSubmitting(false);
+        persistLogin ({...response?.data})
     }).catch((error) => {
         handleMessage(error?.response?.data || 'An error occured', 'FAILED');
+    }).finally(() => {
         setSubmitting(false);
     });
   };
@@ -62,7 +76,7 @@ const Login = ({navigation}) => {
                 handleMessage('Successful Google Signin', 'SUCCESS');
                 setTimeout(() => {
                     handleMessage(null);
-                    navigation.navigate('Welcome', {email, name, accessToken, refreshToken});
+                    persistLogin ({email, name, accessToken, refreshToken})
                 }, 1000); // 1s
             } else {
                 handleMessage('Unsuccessful Google Signin', 'FAILED');
@@ -75,7 +89,7 @@ const Login = ({navigation}) => {
             setGoogleSubmitting(false);
         });
   };
-  
+
   return (    
     <KeyboardAvoindingWrapper>
       <StyledContainer>

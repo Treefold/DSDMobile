@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
+import { CredentialsContext } from './../components/CredentialsContext';
 import {
     InnerContainer, 
     PageTitle, SubTitle, 
@@ -9,9 +11,10 @@ import {
 } from './../components/styles';
 
 
-const Welcome = ({ navigation, route }) => {
+const Welcome = () => {
 
-    const {name, email} = route.params;
+    const {storedCredentials, setStoredCredentials} = useContext(CredentialsContext);
+    const {name, email} = storedCredentials;
 
     return (
         <>
@@ -26,7 +29,12 @@ const Welcome = ({ navigation, route }) => {
                     <Avatar resizeMode="cover" source={require('./../assets/img/Logo.png')} />
 
                     <Line />
-                    <StyledButton onPress={() => {navigation.navigate("Login");}}>
+                    <StyledButton onPress={() => {
+                        AsyncStorage.removeItem('normalCredentials')
+                        .then(() => {
+                            setStoredCredentials ('');
+                        }).catch(err => console.log(err));
+                    }}>
                         <ButtonText>Logout</ButtonText>
                     </StyledButton>
 

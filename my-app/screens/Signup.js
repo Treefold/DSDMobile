@@ -30,7 +30,7 @@ const Signup = ({navigation}) => {
     const [messageType, setMessageType] = useState(); 
     const [errMessages, setErrMessages] = useState({});
 
-    const {storedCredentials, setStoredCredentials} = useContext(CredentialsContext);
+    const { setStoredCredentials } = useContext(CredentialsContext);
   
     const handleMessage = (message, type = 'FAILED') => {
         setMessage (message);

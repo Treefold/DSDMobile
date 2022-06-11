@@ -30,8 +30,6 @@ const Welcome = () => {
     const daysToMyNextBirthday = Math.ceil((startBirthday - today) / (1000 * 3600 * 24));
     const isMyBirthday = (daysToMyNextBirthday == 0);
     
-    console.log(daysToMyNextBirthday)
-
     return (
         <>
             <StatusBar style='dark' />

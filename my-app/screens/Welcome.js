@@ -14,7 +14,8 @@ import {
 const Welcome = () => {
 
     const {storedCredentials, setStoredCredentials} = useContext(CredentialsContext);
-    const {name, email} = storedCredentials;
+    const {name, email, photoUrl} = storedCredentials;
+    const avatarSource = photoUrl ? {uri: photoUrl} : require('./../assets/img/Logo.png');
 
     return (
         <>
@@ -26,7 +27,7 @@ const Welcome = () => {
                     <PageTitle welcome={true}>Welocome,</PageTitle>
                     <SubTitle welcome={true}>{name || 'Test'}</SubTitle>
                     <SubTitle welcome={true}>{email || 'test@mail.com'}</SubTitle>
-                    <Avatar resizeMode="cover" source={require('./../assets/img/Logo.png')} />
+                    <Avatar resizeMode="cover" source={avatarSource} />
 
                     <Line />
                     <StyledButton onPress={() => {

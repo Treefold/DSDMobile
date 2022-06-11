@@ -22,7 +22,7 @@ import {
 
 const { brand, darkLight, primary } = Colors;
 
-const Login = () => {
+const Login = ({navigation}) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState(); 
@@ -72,11 +72,11 @@ const Login = () => {
         .then((result) => {
             const {type, user, accessToken, refreshToken} = result;
             if (type == 'success') {
-                const {email, name} = user;
+                const {email, name, photoUrl} = user;
                 handleMessage('Successful Google Signin', 'SUCCESS');
                 setTimeout(() => {
                     handleMessage(null);
-                    persistLogin ({email, name, accessToken, refreshToken})
+                    persistLogin ({email, name, photoUrl, accessToken, refreshToken})
                 }, 1000); // 1s
             } else {
                 handleMessage('Unsuccessful Google Signin', 'FAILED');

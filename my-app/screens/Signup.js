@@ -21,7 +21,7 @@ import {
 
 const { brand, darkLight, primary } = Colors;
 
-const Signup = () => {
+const Signup = ({navigation}) => {
     const defaultDate = new Date(2000, 0, 1);
     const [hidePassword, setHidePassword] = useState(true);
     const [show, setShow] = useState(false);

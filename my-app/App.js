@@ -11,7 +11,6 @@ const App = () => {
   const checkLoginCredentials = () => {
     AsyncStorage.getItem('normalCredentials')
       .then((result) => {
-        console.log("result", result);
         if (result) {
           setStoredCredentials(JSON.parse(result));
         } else {

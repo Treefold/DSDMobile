@@ -9,7 +9,9 @@ import {
 } from './../components/styles';
 
 
-const Welcome = ({navigation}) => {
+const Welcome = ({ navigation, route }) => {
+
+    const {name, email} = route.params;
 
     return (
         <>
@@ -19,7 +21,8 @@ const Welcome = ({navigation}) => {
                 <WelcomeContainter>
 
                     <PageTitle welcome={true}>Welocome,</PageTitle>
-                    <SubTitle welcome={true}>Mihai</SubTitle>
+                    <SubTitle welcome={true}>{name || 'Test'}</SubTitle>
+                    <SubTitle welcome={true}>{email || 'test@mail.com'}</SubTitle>
                     <Avatar resizeMode="cover" source={require('./../assets/img/Logo.png')} />
 
                     <Line />

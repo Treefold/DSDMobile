@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { ActivityIndicator, Button, StyleSheet, Text, TextInput, View, SafeAreaView } from 'react-native';
+import { View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Formik } from 'formik';
 import axios from 'axios';

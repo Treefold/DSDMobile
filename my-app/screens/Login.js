@@ -3,6 +3,7 @@ import { ActivityIndicator, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Formik } from 'formik';
 import axios from 'axios';
+import * as Google from "expo-google-app-auth"
 import { Fontisto, Ionicons, Octicons } from '@expo/vector-icons';
 import env from "./../env";
 
@@ -23,6 +24,7 @@ const Login = ({navigation}) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState(); 
+  const [googleSubmitting, setGoogleSubmitting] = useState(false);
 
   const handleMessage = (message, type = 'FAILED') => {
       setMessage (message);
@@ -41,6 +43,37 @@ const Login = ({navigation}) => {
         handleMessage(error?.response?.data || 'An error occured', 'FAILED');
         setSubmitting(false);
     });
+  };
+
+  const handleGoogleSignin = () => {
+    setGoogleSubmitting(true);
+    const config = {
+        androidClientId: env.androidClientId,
+        iosClientId: env.iosClientId,
+        scopes: ['profile', 'email'], //'https://www.googleapis.com/auth/user.birthday.read'
+    }
+
+    Google
+        .logInAsync(config)
+        .then((result) => {
+            const {type, user, accessToken, refreshToken} = result;
+            if (type == 'success') {
+                const {email, name} = user;
+                handleMessage('Successful Google Signin', 'SUCCESS');
+                setTimeout(() => {
+                    handleMessage(null);
+                    navigation.navigate('Welcome', {email, name, accessToken, refreshToken});
+                }, 1000); // 1s
+            } else {
+                handleMessage('Unsuccessful Google Signin', 'FAILED');
+            }
+            
+        }).catch((error) => {
+            console.log(error);
+            handleMessage('Failed to sign in into with Google', 'FAILED');
+        }).finally(() => {
+            setGoogleSubmitting(false);
+        });
   };
   
   return (    
@@ -95,16 +128,24 @@ const Login = ({navigation}) => {
                 {!isSubmitting && <StyledButton onPress={handleSubmit}>
                     <ButtonText>Login</ButtonText>
                 </StyledButton>}
-
                 {isSubmitting && <StyledButton disable={true}>
                     <ActivityIndicator size="small" color={primary} />
                 </StyledButton>}
 
                 <Line />
-                <StyledButton google={true} onPress={handleSubmit}>
-                    <Fontisto name="google" color={primary} size={25} />
-                    <ButtonText google={true}>Sigh in with google</ButtonText>
-                </StyledButton>
+
+                {!googleSubmitting && (
+                    <StyledButton google={true} onPress={handleGoogleSignin}>
+                        <Fontisto name="google" color={primary} size={25} />
+                        <ButtonText google={true}>Sigh in with google</ButtonText>
+                    </StyledButton>
+                )}
+                {googleSubmitting && (
+                    <StyledButton google={true}  disable={true}>
+                        <ActivityIndicator size="small" color={primary} />
+                    </StyledButton>
+                )}
+
                 <ExtraView>
                     <ExtraText>Don't have an account already? </ExtraText>
                     <TextLink onPress={() => {navigation.navigate("Signup");}}>

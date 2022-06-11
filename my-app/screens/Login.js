@@ -35,7 +35,7 @@ const Login = ({navigation}) => {
     const url = env.endpoint + 'sessions';
 
     axios.post(url, credentials).then((response) => {
-        navigation.navigate('Welcome', response?.data);
+        navigation.navigate('Welcome', {...response?.data});
         setSubmitting(false);
     }).catch((error) => {
         handleMessage(error?.response?.data || 'An error occured', 'FAILED');

@@ -19,15 +19,6 @@ import {
 
 const { brand, darkLight, primary } = Colors;
 
-// axios.post(
-//     "http://" + "192.168.50.28" + ":8080/api/sessions", 
-//     {email:"test@example.com", password:"Password456!"}
-// ).then((response) => {
-//     console.log(response)
-// }).catch((error) => {
-//     console.log("HandleLoginError: ", error);
-// });
-
 const Login = ({navigation}) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState();
@@ -44,7 +35,7 @@ const Login = ({navigation}) => {
     const url = env.endpoint + 'sessions';
 
     axios.post(url, credentials).then((response) => {
-        navigation.navigate('Welcome', response.data);
+        navigation.navigate('Welcome', response?.data);
         setSubmitting(false);
     }).catch((error) => {
         handleMessage(error?.response?.data || 'An error occured', 'FAILED');

@@ -1,10 +1,12 @@
 import React, {useState} from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Formik } from 'formik';
+import axios from 'axios';
 import { Ionicons, Octicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import KeyboardAvoindingWrapper from '../components/KeyboardAvoindingWrapper';
+import env from "./../env";
+import KeyboardAvoindingWrapper from './../components/KeyboardAvoindingWrapper';
 import {
     Colors,
     StyledContainer, InnerContainer, 
@@ -15,13 +17,45 @@ import {
     ExtraView, ExtraText, TextLink, TextLinkContent,
 } from './../components/styles';
 
-const { brand, darkLight } = Colors;
+const { brand, darkLight, primary } = Colors;
 
 const Signup = ({navigation}) => {
     const defaultDate = new Date(2000, 0, 1);
     const [hidePassword, setHidePassword] = useState(true);
     const [show, setShow] = useState(false);
     const [date, setDate] = useState(defaultDate);
+    const [message, setMessage] = useState();
+    const [messageType, setMessageType] = useState(); 
+    const [errMessages, setErrMessages] = useState({});
+  
+    const handleMessage = (message, type = 'FAILED') => {
+        setMessage (message);
+        setMessageType (type);
+    }
+  
+    const handleSignup = (credentials, setSubmitting) => {
+        handleMessage(null);
+        setErrMessages({});
+    
+        const url = env.endpoint + 'users';
+    
+        axios.post(url, credentials).then((response) => {
+            navigation.navigate('Welcome', {...response?.data});
+            setSubmitting(false);
+        }).catch((error) => {
+            // handleMessage(error?.response?.data || 'An error occured', 'FAILED');
+
+            const rawErrors = error?.response?.data || [];
+            const newErrMessages = {};
+            rawErrors.forEach ( (rawErr) => {
+                const msgId = rawErr?.path[1];
+                newErrMessages[msgId] = rawErr?.message;
+            })
+            setErrMessages(newErrMessages);
+
+            setSubmitting(false);
+        });
+    };
 
     const onDateChange = (_event, selectedDate) => {
         if (selectedDate)
@@ -56,41 +90,61 @@ const Signup = ({navigation}) => {
                     )}
 
                     <Formik
-                        initialValues={{fullName: '', email: '', dateOfBirth: '', password: '', confirmPassword: '' }}
-                        onSubmit={(values) => {
-                            console.log(values);
-                            navigation.navigate("Welcome");
+                        initialValues={{name: '', email: '', dateOfBirth: '', password: '', passwordConfirmation: '' }}
+                        onSubmit={(values, { setSubmitting }) => {
+                            values = {...values, dateOfBirth: (date || defaultDate).toLocaleDateString() }
+                            if (!(
+                                values.name?.length > 0 && 
+                                values.email?.length > 0 && 
+                                values.password?.length > 0  
+                                && values.passwordConfirmation?.length > 0 
+                                && values.dateOfBirth?.length > 0 
+                            )) {
+                                handleMessage("Please fill all fields");
+                                setSubmitting(false);
+                                return;
+                            } else if (values.password != values.passwordConfirmation) {
+                                handleMessage("Passwords do not match");
+                                setSubmitting(false);
+                                return;
+                            }
+                            
+                            handleSignup(values, setSubmitting);
+                            setSubmitting(false);
                         }}
                     >
-                        {({handleChange, handleBlur, handleSubmit, values}) => (<StyledFormArea>
+                        {({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (<StyledFormArea>
 
+                            <MsgBox type={'FAILED'}>{errMessages?.name || null}</MsgBox>
                             <MyTextInput 
                                 label="Full Name" 
                                 icon="person" 
                                 placeholder="Ion Ionescu" 
                                 placeholderTextColor={darkLight}
-                                onChange={handleChange('fullName')}
-                                onBlur={handleBlur('fullName')}
-                                value={values.fullName}
+                                onChangeText={handleChange('name')}
+                                onBlur={handleBlur('name')}
+                                value={values.name}
                             />
                             
+                            <MsgBox type={'FAILED'}>{errMessages?.email || null}</MsgBox>
                             <MyTextInput 
                                 label="Email Address" 
                                 icon="mail" 
                                 placeholder="example@mail.com" 
                                 placeholderTextColor={darkLight}
-                                onChange={handleChange('email')}
+                                onChangeText={handleChange('email')}
                                 onBlur={handleBlur('email')}
                                 value={values.email}
                                 keyboardType="email-address"
                             />
                             
+                            <MsgBox type={'FAILED'}>{errMessages?.dateOfBirth || null}</MsgBox>
                             <MyTextInput 
                                 label="Date of Birth" 
                                 icon="calendar" 
                                 placeholder="YYYY - MM - DD" 
                                 placeholderTextColor={darkLight}
-                                onChange={handleChange('dateOfBirth')}
+                                onChangeText={handleChange('dateOfBirth')}
                                 onBlur={handleBlur('dateOfBirth')}
                                 value={(date || defaultDate).toLocaleDateString()}
                                 isDate={true}
@@ -98,12 +152,13 @@ const Signup = ({navigation}) => {
                                 showDatePicker={showDatePicker}
                             />
 
+                            <MsgBox type={'FAILED'}>{errMessages?.password || null}</MsgBox>
                             <MyTextInput 
                                 label="Password" 
                                 icon="lock" 
                                 placeholder="********" 
                                 placeholderTextColor={darkLight}
-                                onChange={handleChange('password')}
+                                onChangeText={handleChange('password')}
                                 onBlur={handleBlur('password')}
                                 value={values.password}
                                 secureTextEntry={hidePassword}
@@ -112,24 +167,35 @@ const Signup = ({navigation}) => {
                                 setHidePassword={setHidePassword}
                             />
 
+                            <MsgBox type={'FAILED'}>{errMessages?.passwordConfirmation || null}</MsgBox>
                             <MyTextInput 
                                 label="Confirm Password" 
                                 icon="lock" 
                                 placeholder="********" 
                                 placeholderTextColor={darkLight}
-                                onChange={handleChange('confirmPassword')}
-                                onBlur={handleBlur('confirmPassword')}
-                                value={values.confirmPassword}
+                                onChangeText={handleChange('passwordConfirmation')}
+                                onBlur={handleBlur('passwordConfirmation')}
+                                value={values.passwordConfirmation}
                                 secureTextEntry={hidePassword}
                                 isPassword={true}
                                 hidePassword={hidePassword}
                                 setHidePassword={setHidePassword}
                             />
 
-                            <MsgBox>...</MsgBox>
-                            <StyledButton onPress={handleSubmit}>
+                            <MsgBox type={messageType}>{message}</MsgBox>
+                            {/* <StyledButton onPress={handleSubmit}>
                                 <ButtonText>Signup</ButtonText>
-                            </StyledButton>
+                            </StyledButton> */}
+                            
+                
+                            {!isSubmitting && <StyledButton onPress={handleSubmit}>
+                                <ButtonText>Signup</ButtonText>
+                            </StyledButton>}
+
+                            {isSubmitting && <StyledButton disable={true}>
+                                <ActivityIndicator size="small" color={primary} />
+                            </StyledButton>}
+
                             <Line />
                             <ExtraView>
                                 <ExtraText>Already Have an account? </ExtraText>

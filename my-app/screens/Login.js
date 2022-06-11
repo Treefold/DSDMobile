@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Formik } from 'formik';
 import axios from 'axios';
@@ -91,17 +91,14 @@ const Login = ({navigation}) => {
                 />
 
                 <MsgBox type={messageType}>{message}</MsgBox>
-                <StyledButton onPress={handleSubmit}>
-                    <ButtonText>Login</ButtonText>
-                </StyledButton>
                 
-                {/* {!isSubmitting && <StyledButton onPress={handleSubmit}>
+                {!isSubmitting && <StyledButton onPress={handleSubmit}>
                     <ButtonText>Login</ButtonText>
                 </StyledButton>}
 
                 {isSubmitting && <StyledButton disable={true}>
                     <ActivityIndicator size="small" color={primary} />
-                </StyledButton>} */}
+                </StyledButton>}
 
                 <Line />
                 <StyledButton google={true} onPress={handleSubmit}>

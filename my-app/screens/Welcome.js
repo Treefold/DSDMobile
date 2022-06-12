@@ -19,7 +19,8 @@ const Welcome = () => {
     const avatarSource = photoUrl ? {uri: photoUrl} : require('./../assets/img/Logo.png');
 
     const today = new Date();
-    const startBirthday = new Date();//new Date(dateOfBirth);
+    const startBirthday = new Date(dateOfBirth || today);
+    const myAge = today.getFullYear() - startBirthday.getFullYear();
     startBirthday.setFullYear(today.getFullYear())
     const endBirthday = new Date(startBirthday);
     endBirthday.setDate(endBirthday.getDate() + 1)
@@ -57,7 +58,7 @@ const Welcome = () => {
                         <SubTitle welcome={true}>
                             Happy birthday!
                         </SubTitle>
-                        <ShareComponent shareMessage="Happy birthday to me! Also, you are invited to my party!" shareButtonText="Let everybody know!" />
+                        <ShareComponent shareMessage={"Happy birthday to me! I'm " + myAge + " now. Also, you are invited to my party!"} shareButtonText="Let everybody know!" />
                     </>)}
 
                     <Line />

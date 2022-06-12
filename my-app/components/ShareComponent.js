@@ -8,16 +8,7 @@ const ShareComponent = ({ shareMessage, shareButtonText, ...props}) => {
     try {
       Share.share({
         message: shareMessage || 'Just a share',
-      }).then( (result) => {
-        if (result.action === Share.sharedAction) {
-          console.log(result.activityType)
-          if (result.activityType) {
-            // shared with activity type of result.activityType
-          } else {
-            // shared
-          }
-        }
-      })
+      }).then( () => {} )
     } catch (error) {
       console.log(error.message);
     }

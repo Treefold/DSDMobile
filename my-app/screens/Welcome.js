@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
+import ShareComponent from './../components/ShareComponent';
 import { CredentialsContext } from './../components/CredentialsContext';
 import {
     InnerContainer, 
@@ -18,7 +19,7 @@ const Welcome = () => {
     const avatarSource = photoUrl ? {uri: photoUrl} : require('./../assets/img/Logo.png');
 
     const today = new Date();
-    const startBirthday = new Date(dateOfBirth);
+    const startBirthday = new Date();//new Date(dateOfBirth);
     startBirthday.setFullYear(today.getFullYear())
     const endBirthday = new Date(startBirthday);
     endBirthday.setDate(endBirthday.getDate() + 1)
@@ -47,16 +48,17 @@ const Welcome = () => {
                             Birthdate unknown, so happy birthday anyway!
                         </SubTitle>
                     )}
-                    {dateOfBirth && !isMyBirthday && (
+                    {dateOfBirth && !isMyBirthday && (   
                         <SubTitle welcome={true}>
                             Your birthday is in {daysToMyNextBirthday} {daysToMyNextBirthday > 1 ? 'days' : 'day' }
                         </SubTitle>
                     )}
-                    {dateOfBirth && isMyBirthday && (
+                    {dateOfBirth && isMyBirthday && (<>
                         <SubTitle welcome={true}>
                             Happy birthday!
                         </SubTitle>
-                    )}
+                        <ShareComponent shareMessage="Happy birthday to me! Also, you are invited to my party!" shareButtonText="Let everybody know!" />
+                    </>)}
 
                     <Line />
                     <StyledButton onPress={() => {

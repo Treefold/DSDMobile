@@ -6,6 +6,8 @@ import Animated, {
   withSpring,
   withRepeat,
 } from 'react-native-reanimated';
+import { Colors } from './styles';
+const { brand } = Colors;
 
 const animationStyle = StyleSheet.create({
     container: {
@@ -43,7 +45,7 @@ const LoadingComponent = () => {
         <View style={animationStyle.container}>
         <Animated.View
             style={[
-                { height: AnimationSize, width: AnimationSize, backgroundColor: 'blue' },
+                { height: AnimationSize, width: AnimationSize, backgroundColor: brand },
                 reanimatedStyle,
             ]}
         />

@@ -4,22 +4,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import { Formik } from 'formik';
 import axios from 'axios';
-import { Ionicons, Octicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import env from "./../env";
-import { CredentialsContext } from './../components/CredentialsContext';
+import CredentialsContext from './../components/CredentialsContext';
+import FormikTextInput from './../components/FormikTextInput';
 import KeyboardAvoindingWrapper from './../components/KeyboardAvoindingWrapper';
 import {
     Colors,
     StyledContainer, InnerContainer, 
     PageTitle, SubTitle, 
-    StyledFormArea, StyledInputLabel, StyledTextInput, StyledButton, ButtonText,
-    LeftIcon, RightIcon,
+    StyledFormArea, StyledButton, ButtonText,
     MsgBox, Line,
     ExtraView, ExtraText, TextLink, TextLinkContent,
 } from './../components/styles';
 
-const { brand, darkLight, primary } = Colors;
+const { darkLight, primary } = Colors;
 
 const Signup = ({navigation}) => {
     const defaultDate = new Date(2000, 0, 1);
@@ -127,7 +126,7 @@ const Signup = ({navigation}) => {
                         {({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (<StyledFormArea>
 
                             <MsgBox type={'FAILED'}>{errMessages?.name || null}</MsgBox>
-                            <MyTextInput 
+                            <FormikTextInput 
                                 label="Full Name" 
                                 icon="person" 
                                 placeholder="Ion Ionescu" 
@@ -138,7 +137,7 @@ const Signup = ({navigation}) => {
                             />
                             
                             <MsgBox type={'FAILED'}>{errMessages?.email || null}</MsgBox>
-                            <MyTextInput 
+                            <FormikTextInput 
                                 label="Email Address" 
                                 icon="mail" 
                                 placeholder="example@mail.com" 
@@ -150,7 +149,7 @@ const Signup = ({navigation}) => {
                             />
                             
                             <MsgBox type={'FAILED'}>{errMessages?.dateOfBirth || null}</MsgBox>
-                            <MyTextInput 
+                            <FormikTextInput 
                                 label="Date of Birth" 
                                 icon="calendar" 
                                 placeholder="YYYY - MM - DD" 
@@ -164,7 +163,7 @@ const Signup = ({navigation}) => {
                             />
 
                             <MsgBox type={'FAILED'}>{errMessages?.password || null}</MsgBox>
-                            <MyTextInput 
+                            <FormikTextInput 
                                 label="Password" 
                                 icon="lock" 
                                 placeholder="********" 
@@ -179,7 +178,7 @@ const Signup = ({navigation}) => {
                             />
 
                             <MsgBox type={'FAILED'}>{errMessages?.passwordConfirmation || null}</MsgBox>
-                            <MyTextInput 
+                            <FormikTextInput 
                                 label="Confirm Password" 
                                 icon="lock" 
                                 placeholder="********" 
@@ -216,28 +215,6 @@ const Signup = ({navigation}) => {
                 </InnerContainer>
             </StyledContainer>
         </KeyboardAvoindingWrapper>
-    );
-}
-
-const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, isDate, showDatePicker, ...props }) => {
-    return(
-        <View>
-            <LeftIcon>
-                <Octicons name={icon} size={30} color={brand} />
-            </LeftIcon>
-            <StyledInputLabel>{label}</StyledInputLabel>
-            {!isDate && <StyledTextInput {...props} />}
-            {isDate && (
-                <TouchableOpacity onPress={showDatePicker}>
-                    <StyledTextInput {...props} />
-                </TouchableOpacity> 
-            )}
-            {isPassword && (
-                <RightIcon onPress={() => setHidePassword(!hidePassword)}>
-                    <Ionicons name={hidePassword ? 'md-eye-off' : 'md-eye'} size={30} color={darkLight} /> 
-                </RightIcon>   
-            )}
-        </View>
     );
 }
 

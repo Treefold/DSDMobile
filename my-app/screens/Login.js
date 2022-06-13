@@ -1,27 +1,27 @@
 import React, { useState, useContext } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import { Formik } from 'formik';
 import axios from 'axios';
 import * as Google from "expo-google-app-auth"
-import { Fontisto, Ionicons, Octicons } from '@expo/vector-icons';
+import { Fontisto, } from '@expo/vector-icons';
 import env from "./../env";
 
 import LoadingComponent from './../components/LoadingComponent';
-import { CredentialsContext } from './../components/CredentialsContext';
+import CredentialsContext from './../components/CredentialsContext';
+import FormikTextInput from './../components/FormikTextInput';
 import KeyboardAvoindingWrapper from './../components/KeyboardAvoindingWrapper';
 import {
     Colors,
     StyledContainer, InnerContainer, 
     PageLogo, PageTitle, SubTitle, 
-    StyledFormArea, StyledInputLabel, StyledTextInput, StyledButton, ButtonText,
-    LeftIcon, RightIcon,
+    StyledFormArea, StyledButton, ButtonText,
     MsgBox, Line,
     ExtraView, ExtraText, TextLink, TextLinkContent,
 } from './../components/styles';
 
-const { brand, darkLight, primary } = Colors;
+const { darkLight, primary } = Colors;
 
 const Login = ({navigation}) => {
     const [hidePassword, setHidePassword] = useState(true);
@@ -82,6 +82,7 @@ const Login = ({navigation}) => {
                     }, 3000); // 3s
                 } else {
                     handleMessage('Unsuccessful Google Signin', 'FAILED');
+                    setGoogleSubmitting(false);
                 }
                 
             }).catch((error) => {
@@ -97,8 +98,7 @@ const Login = ({navigation}) => {
         )}
 
         {!googleSubmitting && (<>
-            <KeyboardAvoindingWrapper>
-            <StyledContainer>
+            <KeyboardAvoindingWrapper><StyledContainer>
                 <StatusBar style='dark' />
                 <InnerContainer> 
                     <PageLogo resizeMode="cover" source={require('./../assets/img/Logo.png')} />
@@ -118,87 +118,67 @@ const Login = ({navigation}) => {
                             setSubmitting(false);
                         }}
                     >
-                    {({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (
-                    <StyledFormArea>
-                        <MyTextInput
-                            label="Email Address" 
-                            icon="mail" 
-                            placeholder="example@mail.com" 
-                            placeholderTextColor={darkLight}
-                            onChangeText={handleChange('email')}
-                            onBlur={handleBlur('email')}
-                            value={values.email}
-                            keyboardType="email-address"
-                        />
-                        <MyTextInput
-                            label="Password" 
-                            icon="lock" 
-                            placeholder="********" 
-                            onChangeText={handleChange('password')}
-                            onBlur={handleBlur('password')}
-                            value={values.password}
-                            secureTextEntry={hidePassword}
-                            isPassword={true}
-                            hidePassword={hidePassword}
-                            setHidePassword={setHidePassword}
-                        />
+                        {({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (<StyledFormArea>
+                            <FormikTextInput
+                                label="Email Address" 
+                                icon="mail" 
+                                placeholder="example@mail.com" 
+                                placeholderTextColor={darkLight}
+                                onChangeText={handleChange('email')}
+                                onBlur={handleBlur('email')}
+                                value={values.email}
+                                keyboardType="email-address"
+                            />
+                            <FormikTextInput
+                                label="Password" 
+                                icon="lock" 
+                                placeholder="********" 
+                                onChangeText={handleChange('password')}
+                                onBlur={handleBlur('password')}
+                                value={values.password}
+                                secureTextEntry={hidePassword}
+                                isPassword={true}
+                                hidePassword={hidePassword}
+                                setHidePassword={setHidePassword}
+                            />
 
-                        <MsgBox type={messageType}>{message}</MsgBox>
-                        
-                        {!isSubmitting && <StyledButton onPress={handleSubmit}>
-                            <ButtonText>Login</ButtonText>
-                        </StyledButton>}
-                        {isSubmitting && <StyledButton disable={true}>
-                            <ActivityIndicator size="small" color={primary} />
-                        </StyledButton>}
-
-                        <Line />
-
-                        {!googleSubmitting && (
-                            <StyledButton google={true} onPress={handleGoogleSignin}>
-                                <Fontisto name="google" color={primary} size={25} />
-                                <ButtonText google={true}>Sigh in with google</ButtonText>
-                            </StyledButton>
-                        )}
-                        {googleSubmitting && (
-                            <StyledButton google={true}  disable={true}>
+                            <MsgBox type={messageType}>{message}</MsgBox>
+                            
+                            {!isSubmitting && <StyledButton onPress={handleSubmit}>
+                                <ButtonText>Login</ButtonText>
+                            </StyledButton>}
+                            {isSubmitting && <StyledButton disable={true}>
                                 <ActivityIndicator size="small" color={primary} />
-                            </StyledButton>
-                        )}
+                            </StyledButton>}
 
-                        <ExtraView>
-                            <ExtraText>Don't have an account already? </ExtraText>
-                            <TextLink onPress={() => {navigation.navigate("Signup");}}>
-                                <TextLinkContent>Signup</TextLinkContent>
-                            </TextLink>
-                        </ExtraView>
-                        
+                            <Line />
 
-                    </StyledFormArea>)}
+                            {!googleSubmitting && (
+                                <StyledButton google={true} onPress={handleGoogleSignin}>
+                                    <Fontisto name="google" color={primary} size={25} />
+                                    <ButtonText google={true}>Sigh in with google</ButtonText>
+                                </StyledButton>
+                            )}
+                            {googleSubmitting && (
+                                <StyledButton google={true}  disable={true}>
+                                    <ActivityIndicator size="small" color={primary} />
+                                </StyledButton>
+                            )}
+
+                            <ExtraView>
+                                <ExtraText>Don't have an account already? </ExtraText>
+                                <TextLink onPress={() => {navigation.navigate("Signup");}}>
+                                    <TextLinkContent>Signup</TextLinkContent>
+                                </TextLink>
+                            </ExtraView>
+                            
+                        </StyledFormArea>)}
                     </Formik>
 
                 </InnerContainer>
-            </StyledContainer>
-            </KeyboardAvoindingWrapper>
+            </StyledContainer></KeyboardAvoindingWrapper>
         </>)}
     </>);
-}
-
-const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props }) => {
-  return(
-      <View>
-            <LeftIcon>
-                <Octicons name={icon} size={30} color={brand} />
-            </LeftIcon>
-            <StyledInputLabel>{label}</StyledInputLabel>
-            <StyledTextInput {...props} />
-            {isPassword && (
-                <RightIcon onPress={() => setHidePassword(!hidePassword)}>
-                    <Ionicons name={hidePassword ? 'md-eye-off' : 'md-eye'} size={30} color={darkLight} /> 
-                </RightIcon>   
-            )}
-      </View>
-  );
 }
   
 export default Login;
